@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/NoamFav/netviz/pkg/models"
 	"github.com/gorilla/websocket"
-	"github.com/yourusername/netviz/pkg/models"
 )
 
 var upgrader = websocket.Upgrader{

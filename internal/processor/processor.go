@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/yourusername/netviz/pkg/models"
+	"github.com/NoamFav/netviz/pkg/models"
 )
 
 type Processor struct {

@@ -6,10 +6,10 @@ import (
 	"net"
 	"time"
 
+	"github.com/NoamFav/netviz/pkg/models"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
-	"github.com/yourusername/netviz/pkg/models"
 )
 
 type Capturer struct {

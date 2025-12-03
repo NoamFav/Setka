@@ -3,7 +3,7 @@ package enricher
 import (
 	"net"
 
-	"github.com/yourusername/netviz/pkg/models"
+	"github.com/NoamFav/netviz/pkg/models"
 )
 
 type Enricher struct {
@@ -35,7 +35,7 @@ func (e *Enricher) Start() {
 	}
 }
 
-func (e *Enricher) getDirection(srcIP, dstIP net.IP) string {
+func (e *Enricher) getDirection(srcIP, _ net.IP) string {
 	if isLocalIP(srcIP) {
 		return "outbound"
 	}

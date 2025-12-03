@@ -1,8 +1,8 @@
-module github.com/yourusername/netviz
+module github.com/NoamFav/netviz
 
 go 1.21
 
 require (
 	github.com/google/gopacket v1.1.19
-	github.com/gorilla/websocket v1.5.1
+	github.com/gorilla/websocket v1.5.3
 )

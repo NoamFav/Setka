@@ -7,10 +7,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/yourusername/netviz/internal/api"
-	"github.com/yourusername/netviz/internal/capture"
-	"github.com/yourusername/netviz/internal/enricher"
-	"github.com/yourusername/netviz/internal/processor"
+	"github.com/NoamFav/netviz/internal/api"
+	"github.com/NoamFav/netviz/internal/capture"
+	"github.com/NoamFav/netviz/internal/enricher"
+	"github.com/NoamFav/netviz/internal/processor"
 )
 
 func main() {
