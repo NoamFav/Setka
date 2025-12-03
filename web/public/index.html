@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetViz - Network Traffic Monitor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0e27;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        .status.connected { background: #1a472a; color: #4ade80; }
+        .status.disconnected { background: #4a1a1a; color: #f87171; }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #1a1f3a;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #2a2f4a;
+        }
+        .stat-card h3 { font-size: 0.85em; color: #888; margin-bottom: 8px; }
+        .stat-card .value { font-size: 2em; font-weight: bold; color: #667eea; }
+
+        table {
+            width: 100%;
+            background: #1a1f3a;
+            border-radius: 12px;
+            overflow: hidden;
+            border-collapse: collapse;
+        }
+        th {
+            background: #2a2f4a;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: #a0a0a0;
+        }
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #2a2f4a;
+        }
+        tr:hover { background: #252a45; }
+
+        .direction {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 600;
+        }
+        .direction.outbound { background: #1e3a5f; color: #60a5fa; }
+        .direction.inbound { background: #3a1e5f; color: #c084fc; }
+
+        .bytes { color: #4ade80; font-weight: 500; }
+        .protocol {
+            font-family: 'Courier New', monospace;
+            background: #2a2f4a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <h1>⚡ NetViz</h1>
+    <div id="status" class="status disconnected">🔴 Connecting...</div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <h3>ACTIVE FLOWS</h3>
+            <div class="value" id="flowCount">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>TOTAL SENT</h3>
+            <div class="value" id="totalSent">0 KB</div>
+        </div>
+        <div class="stat-card">
+            <h3>TOTAL RECEIVED</h3>
+            <div class="value" id="totalRecv">0 KB</div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Process</th>
+                <th>Remote IP</th>
+                <th>Port</th>
+                <th>Protocol</th>
+                <th>Direction</th>
+                <th>Sent</th>
+                <th>Received</th>
+                <th>Packets</th>
+            </tr>
+        </thead>
+        <tbody id="flowTable"></tbody>
+    </table>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:8080/ws');
+        const statusEl = document.getElementById('status');
+        const flowTableEl = document.getElementById('flowTable');
+        const flowCountEl = document.getElementById('flowCount');
+        const totalSentEl = document.getElementById('totalSent');
+        const totalRecvEl = document.getElementById('totalRecv');
+
+        ws.onopen = () => {
+            statusEl.textContent = '🟢 Connected';
+            statusEl.className = 'status connected';
+        };
+
+        ws.onclose = () => {
+            statusEl.textContent = '🔴 Disconnected';
+            statusEl.className = 'status disconnected';
+        };
+
+        ws.onmessage = (event) => {
+            const flows = JSON.parse(event.data);
+            renderFlows(flows);
+        };
+
+        function renderFlows(flows) {
+            flowCountEl.textContent = flows.length;
+
+            let totalSent = 0, totalRecv = 0;
+
+            const rows = flows
+                .sort((a, b) => (b.bytes_sent + b.bytes_recv) - (a.bytes_sent + a.bytes_recv))
+                .map(flow => {
+                    totalSent += flow.bytes_sent;
+                    totalRecv += flow.bytes_recv;
+
+                    return `
+                        <tr>
+                            <td><strong>${flow.process_name}</strong></td>
+                            <td><code>${flow.remote_ip}</code></td>
+                            <td>${flow.remote_port}</td>
+                            <td><span class="protocol">${flow.protocol}</span></td>
+                            <td><span class="direction ${flow.direction}">${flow.direction}</span></td>
+                            <td class="bytes">${formatBytes(flow.bytes_sent)}</td>
+                            <td class="bytes">${formatBytes(flow.bytes_recv)}</td>
+                            <td>${flow.packet_count}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+            flowTableEl.innerHTML = rows || '<tr><td colspan="8" style="text-align:center;color:#666;">No active flows</td></tr>';
+            totalSentEl.textContent = formatBytes(totalSent);
+            totalRecvEl.textContent = formatBytes(totalRecv);
+        }
+
+        function formatBytes(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+╔══════════════════════════════════════════════════════════════╗
+║                   NETVIZ SETUP COMPLETE                      ║
+╚══════════════════════════════════════════════════════════════╝
+
+📦 Project structure created successfully!
+
+🚀 TO RUN:
+
+  1. Install libpcap (if not already installed):
+
+     macOS:   brew install libpcap
+     Linux:   sudo apt-get install libpcap-dev
+
+  2. Download dependencies:
+
+     go mod download
+
+  3. Run NetViz (requires sudo for packet capture):
+
+     sudo go run cmd/netviz/main.go
+
+     Or specify interface:
+     sudo go run cmd/netviz/main.go -i en0
+
+  4. Open browser:
+
+     http://localhost:8080
+
+🔍 WHAT YOU'LL SEE:
+
+  - Real-time list of network flows
+  - Process names (mocked for now)
+  - Bytes sent/received per flow
+  - Inbound/outbound direction
+  - Active connection count
+
+💡 QUICK TEST:
+
+  Open a new terminal and run:
+
+  curl google.com
+
+  You should see it appear in the web UI!
+
+📝 FILES CREATED:
+
+  cmd/netviz/main.go          - Entry point
+  internal/capture/           - Packet capture layer
+  internal/enricher/          - Metadata enrichment
+  internal/processor/         - Flow aggregation
+  internal/api/               - WebSocket server
+  pkg/models/                 - Data structures
+  web/public/index.html       - Frontend UI
+
+🎯 NEXT IMPROVEMENTS:
+
+  1. Replace mocked process names with real lookups
+  2. Add DNS reverse resolution
+  3. Integrate GeoIP database
+  4. Add D3.js graph visualization
+  5. Add filtering by process/domain
+
+═══════════════════════════════════════════════════════════════
+
+Run into issues? Check:
+- Are you running with sudo?
+- Is libpcap installed?
+- Is port 8080 available?
+- Try a specific interface: -i en0 (Mac) or -i eth0 (Linux)
+
+Happy hacking! 🎉
