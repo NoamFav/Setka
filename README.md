@@ -1,6 +1,27 @@
-# NetViz v0.1
+# 🌐 Setka
 
-Real-time network traffic visualization tool.
+<div align="center">
+
+<img src="https://img.shields.io/badge/go-1.21+-00ADD8.svg?style=for-the-badge&logo=go" alt="Go">
+<img src="https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge" alt="License">
+
+**Real-time network traffic visualization in the browser**
+
+[Installation](#installation) · [Quick Start](#quick-start) · [Options](#options)
+
+</div>
+
+---
+
+Setka captures live packets and streams them to a web dashboard over WebSocket, giving you a real-time view of TCP/UDP flows, traffic direction, and per-connection stats.
+
+```
+Capture → Enricher → Processor → API Server → WebSocket → Browser
+```
+
+Built with Go + gopacket + gorilla/websocket.
+
+---
 
 ## Quick Start
 
@@ -15,37 +36,48 @@ sudo go run cmd/netviz/main.go -i en0
 open http://localhost:8080
 ```
 
+---
+
 ## Options
 
-- `-i` - Network interface (default: "any")
-- `-addr` - Server address (default: "localhost:8080")
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-i` | `any` | Network interface to capture on |
+| `-addr` | `localhost:8080` | Server address |
 
-## What's Working
+---
 
-✅ Live packet capture (TCP/UDP)
-✅ Flow aggregation
-✅ WebSocket streaming
-✅ Basic web UI with stats
-✅ Direction detection (in/out)
+## Status
 
-## What's Mocked
+| Feature | State |
+|---------|-------|
+| Live packet capture (TCP/UDP) | ✅ |
+| Flow aggregation | ✅ |
+| WebSocket streaming | ✅ |
+| Basic web UI with stats | ✅ |
+| Direction detection (in/out) | ✅ |
+| Process→socket mapping | ⚠️ port-based guess |
+| DNS resolution | ⚠️ IPs only |
+| GeoIP lookup | ⚠️ not yet |
 
-⚠️ Process name lookup (port-based guess)
-⚠️ DNS resolution (shows IPs)
-⚠️ GeoIP lookup
+---
 
-## Next Steps
+## Roadmap
 
-- Add real process→socket mapping (/proc or lsof)
-- Integrate MaxMind GeoIP database
-- Add graph visualization (D3 force layout)
+- Real process→socket mapping (`/proc` or `lsof`)
+- MaxMind GeoIP database integration
+- D3 force-layout graph visualization
 - Per-app filtering
-- Export to CSV/JSON
+- CSV/JSON export
 
-## Architecture
+---
 
-```
-Capture → Enricher → Processor → API Server → WebSocket → Browser
-```
+## License
 
-Built with Go + gopacket + gorilla/websocket.
+MIT — see [LICENSE](LICENSE).
+
+---
+
+<div align="center">
+Made with ❤️ by <a href="https://github.com/NoamFav">NoamFav</a>
+</div>
