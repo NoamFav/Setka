@@ -1,4 +1,3 @@
 *.exe
 target/
 vendor/
-.DS_Store
